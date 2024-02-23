@@ -1,0 +1,28 @@
+# Configuration for Alacritty, the GPU-accelerated terminal emulator.
+
+# Add theme locally
+# import = ["/Users/austintucker/.config/alacritty/themes/themes/gruvbox_dark.toml"]
+
+[colors]
+draw_bold_text_with_bright_colors = true
+
+[cursor]
+blink_interval = 1000
+style = {shape = "underline", blinking = "always"}
+vi_mode_style = "block"
+
+[font]
+size = 13.0
+
+[window]
+decorations = "none"
+
+[font.normal]
+family = "MesloLGS NF"
+style = "Regular"
+
+[scrolling]
+history = 10000
+
+[selection]
+save_to_clipboard = true

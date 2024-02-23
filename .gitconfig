@@ -1,0 +1,26 @@
+[user]
+    email = austin@ridewithloop.com
+    name = Austin Tucker
+    signingkey = 8CD9C62ADBDD42A3
+[commit]
+    gpgsign = true
+[core]
+    excludesfile = /Users/austintucker/.gitignore_global
+    pager = delta
+[push]
+    autoSetupRemote = true
+[filter "lfs"]
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+    clean = git-lfs clean -- %f
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    navigate = true    # use n and N to move between diff sections
+    light = false      # set to true if you're in a terminal w/ a light background color (e.g. the default macOS terminal)
+    syntax-theme = Coldark-Dark
+[merge]
+    conflictstyle = diff3
+[diff]
+    colorMoved = default
