@@ -10,15 +10,12 @@ return {
       vim.keymap.set({ 'n', 'v' }, '<leader>ml', function()
         lint.try_lint()
       end, { desc = 'Lint file or range (in visual mode)' })
-      vim.keymap.set({ 'n', 'v' }, '<leader>mf', function()
-        lint.try_format()
-      end, { desc = 'Format file or range (in visual mode)' })
     end,
   },
   {
     'rshkarin/mason-nvim-lint',
     config = function()
-        require('mason-nvim-lint').setup()
+      require('mason-nvim-lint').setup()
     end,
   },
   {
@@ -32,7 +29,7 @@ return {
           python = { 'ruff_format' },
         },
       }
-      vim.keymap.set({ 'n', 'v' }, '<leader>mp', function()
+      vim.keymap.set({ 'n', 'v' }, '<leader>mf', function()
         conform.format {
           lsp_fallback = true,
           async = false,
