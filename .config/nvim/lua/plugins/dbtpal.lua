@@ -44,6 +44,5 @@ return {
       -- Enable Telescope Extension
       require('telescope').load_extension 'dbtpal'
     end,
-  }
+  },
 }
-
