@@ -65,11 +65,9 @@ vim.o.completeopt = 'menuone,noselect'
 vim.o.termguicolors = true
 
 -- add characters for tabs and end of lines and relative row numbers
-vim.cmd [[
-  set list
-  set list listchars=tab:>\ ,trail:-,eol:$
-  set relativenumber
-]]
+vim.opt.listchars = { tab = '>--', trail = '~', extends = '>', precedes = '<', space = '·', eol = '$' }
+vim.o.list = true
+vim.o.relativenumber = true
 
 -- [[ Basic Keymaps ]]
 

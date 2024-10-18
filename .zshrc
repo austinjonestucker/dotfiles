@@ -156,14 +156,26 @@ export PATH=$PATH:$HOME/.emacs.d/bin
 alias myip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias tmux="TERM=screen-256color-bce tmux -2 -u"
 
+# Lua configuration
+export DYLD_LIBRARY_PATH=/opt/homebrew/lib/
+
+# Ruby configurations
+eval "$(rbenv init -)"
+export RBENV_VERSION="3.3.0"
+export RBENV_HOME="$HOME/.gem/ruby/$RBENV_VERSION"
+export PATH=$RBENV_HOME/bin:$PATH
+
 # Java configuration
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
 # export JAVA_HOME=$(/usr/libexec/java_home)
 export PATH=$JAVA_HOME/bin:$PATH
 export PATH=$PATH:$JAVA_HOME/jre/bin
 
-# PySpark configuration
+# Javascript configurations
+export DENO_INSTALL="$HOME/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"
 
+# PySpark configuration
 # source /etc/environment
 #when running spark locally, it uses 2 cores, hence local[2]
 # export PYSPARK_SUBMIT_ARGS="--master local[2] pyspark-shell"
@@ -176,14 +188,14 @@ export PYSPARK_PYTHON=python3
 export CONDA_AUTO_ACTIVATE_BASE=false
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/austin/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$('/opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/home/austin/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/austin/miniconda3/etc/profile.d/conda.sh"
+    if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/opt/miniconda3/etc/profile.d/conda.sh"
     else
-        export PATH="/home/austin/miniconda3/bin:$PATH"
+        export PATH="/opt/miniconda3/bin:$PATH"
     fi
 fi
 unset __conda_setup
@@ -192,3 +204,6 @@ unset __conda_setup
 fpath+=${ZDOTDIR:-~}/.zsh_functions
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Generated for envman. Do not edit.
+[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
