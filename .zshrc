@@ -114,6 +114,7 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias der="dotenv run"
+alias vim="nvim"
 
 # Add zmv
 autoload zmv
@@ -121,33 +122,24 @@ autoload zmv
 # GPG config
 export GPG_TTY=$(tty)
 
-# Configure virtualenvwrappper
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-pyenv virtualenvwrapper_lazy
-
 # Kitty config
 export KITTY_CONFIG_DIRECTORY="/Users/{$USER}/.config/kitty"
 
 # Mac OS only config
-export PATH="/opt/homebrew/bin:$PATH"
-export PATH="/opt/homebrew/Cellar/llvm/17.0.4/bin:$PATH";
+export HOMEBREW_HOME="/opt/homebrew"
+export PATH="$HOMEBREW_HOME/bin:$PATH"
+export PATH="$HOMEBREW_HOME/Cellar/llvm/*/bin:$PATH";
 export LC_CTYPE=C
 export LANG=C
 
-export PATH="$HOME/.local/bin:$PATH"
-export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/repos
-# source $HOME/.local/bin/virtualenvwrapper.sh
+# SSH with passwords, if passwords in 1Password
+alias sshwp='~/ssh_login.sh'
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Add thefuck
-eval $(thefuck --alias)
+# eval $(thefuck --alias)
 
 # Add Doom Emacs
 export PATH=$PATH:$HOME/.emacs.d/bin
@@ -157,13 +149,13 @@ alias myip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias tmux="TERM=screen-256color-bce tmux -2 -u"
 
 # Lua configuration
-export DYLD_LIBRARY_PATH=/opt/homebrew/lib/
+export DYLD_LIBRARY_PATH=$HOMEBREW_HOME/lib/
 
 # Ruby configurations
-eval "$(rbenv init -)"
-export RBENV_VERSION="3.3.0"
-export RBENV_HOME="$HOME/.gem/ruby/$RBENV_VERSION"
-export PATH=$RBENV_HOME/bin:$PATH
+# eval "$(rbenv init -)"
+# export RBENV_VERSION="3.3.0"
+# export RBENV_HOME="$HOME/.gem/ruby/$RBENV_VERSION"
+# export PATH=$RBENV_HOME/bin:$PATH
 
 # Java configuration
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
@@ -171,9 +163,26 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/H
 export PATH=$JAVA_HOME/bin:$PATH
 export PATH=$PATH:$JAVA_HOME/jre/bin
 
+# Oracle SQL CL
+export ORACLE_HOME=$HOME/oracle
+export PATH=$HOMEBREW_HOME/Caskroom/sqlcl/*/sqlcl/bin:"$PATH"
+export PATH=$PATH:$ORACLE_HOME
+
 # Javascript configurations
 export DENO_INSTALL="$HOME/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
+
+# Configure Python
+export PYENV_ROOT="$HOME/.pyenv"
+export VIRTUALENVWRAPPER_PYTHON="$PYENV_ROOT/shims/python3"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+pyenv virtualenvwrapper_lazy
+
+export PATH="$HOME/.local/bin:$PATH"
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME/repos
 
 # PySpark configuration
 # source /etc/environment
@@ -207,3 +216,6 @@ fpath+=${ZDOTDIR:-~}/.zsh_functions
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+
+# To customize prompt, run `p10k configure` or edit ~/Documents/dotfiles/.p10k.zsh.
+[[ ! -f ~/Documents/dotfiles/.p10k.zsh ]] || source ~/Documents/dotfiles/.p10k.zsh
