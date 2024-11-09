@@ -65,20 +65,26 @@ config.keys = {
 config.window_padding = {
   left = '0',
   right = '0',
-  top = '0',
+  top = '15',
   bottom = '0',
 }
 
+if wezterm.target_triple == 'x86_64-pc-windows-msvc' then
+  -- Requires WSL & Ubuntu to be installed
+  config.default_domain = 'WSL:Ubuntu'
+else
+  -- Windows has font issues, so only change font in *nix
+  config.font = wezterm.font('MesloLGS NF')
+end
+
 -- This is where you actually apply your config choices
 config.color_scheme = 'Kanagawa (Gogh)'
-config.font = wezterm.font('MesloLGS NF')
 config.font_size = 13
 config.line_height = 0.925
--- config.force_reverse_video_cursor = true
--- config.default_cursor_style = 'BlinkingUnderline'
--- config.cursor_blink_rate = 500
--- config.cursor_blink_ease_in = "Constant"
--- config.cursor_blink_ease_out = "Constant"
+config.default_cursor_style = 'BlinkingBlock'
+config.cursor_blink_rate = 500
+config.cursor_blink_ease_in = "Constant"
+config.cursor_blink_ease_out = "Constant"
 config.use_dead_keys = false
 config.scrollback_lines = 10000
 config.hide_tab_bar_if_only_one_tab = true
