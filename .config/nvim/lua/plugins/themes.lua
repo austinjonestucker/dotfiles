@@ -49,17 +49,17 @@ return {
     -- Theme inspired by Kanagawa (not default)
     'rebelot/kanagawa.nvim',
     priority = 1000,
-    -- config = function()
-    --   vim.cmd.colorscheme 'kanagawa-wave'
-    -- end,
+    config = function()
+      vim.cmd.colorscheme 'kanagawa-wave'
+    end,
   },
   {
     "folke/tokyonight.nvim",
     lazy = false,
     priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'tokyonight-moon'
-    end,
+    -- config = function()
+    --   vim.cmd.colorscheme 'tokyonight-moon'
+    -- end,
   },
   {
     -- Set lualine as statusline
@@ -68,7 +68,7 @@ return {
     opts = {
       options = {
         icons_enabled = true,
-        theme = 'nightfly',
+        theme = 'horizon',
       },
     },
   },
