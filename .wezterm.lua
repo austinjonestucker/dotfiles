@@ -61,6 +61,21 @@ config.keys = {
     action = act.SendKey { key = 'u', mods = 'CTRL' },
   },
 }
+-- Mouse
+config.mouse_bindings = {
+  -- Change the default click behavior so that it only selects text and doesn't open hyperlinks
+  {
+    event = { Up = { streak = 1, button = 'Left' } },
+    mods = 'NONE',
+    action = wezterm.action.CompleteSelection('ClipboardAndPrimarySelection'),
+  },
+  -- Open links on Cmd+click
+  {
+    event = { Up = { streak = 1, button = 'Left' } },
+    mods = 'CMD',
+    action = wezterm.action.OpenLinkAtMouseCursor,
+  },
+}
 
 -- Window padding
 config.window_padding = {
@@ -97,5 +112,6 @@ config.native_macos_fullscreen_mode = false
 -- Other configs
 config.use_dead_keys = false
 config.scrollback_lines = 10000
+config.window_close_confirmation = 'NeverPrompt'
 
 return config
