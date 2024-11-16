@@ -81,7 +81,7 @@ config.mouse_bindings = {
 config.window_padding = {
   left = '0',
   right = '0',
-  top = '15',
+  top = '8',
   bottom = '0',
 }
 
@@ -98,6 +98,7 @@ end
 -- Editor styling
 config.color_scheme = 'Kanagawa (Gogh)'
 config.font = wezterm.font('MesloLGS NF')
+config.freetype_load_flags = 'NO_HINTING'
 config.line_height = 0.925
 config.default_cursor_style = 'BlinkingBlock'
 config.cursor_blink_rate = 500
