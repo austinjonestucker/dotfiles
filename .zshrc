@@ -99,9 +99,6 @@ source $ZSH/oh-my-zsh.sh
 #   export EDITOR='mvim'
 # fi
 
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-#
 # fix wsl time sync
 # sudo ntpdate ntp.ubuntu.com &>/dev/null &
 
@@ -126,14 +123,46 @@ export GPG_TTY=$(tty)
 export KITTY_CONFIG_DIRECTORY="/Users/{$USER}/.config/kitty"
 
 # Mac OS only config
-export HOMEBREW_HOME="/opt/homebrew"
+# export HOMEBREW_HOME="/opt/homebrew"
+export HOMEBREW_HOME="/usr/local"
+export MACPORTS_HOME="/opt/local"
+
+# C Compilation
 export PATH="$HOMEBREW_HOME/bin:$PATH"
-export PATH="$HOMEBREW_HOME/Cellar/llvm/*/bin:$PATH";
+export LDFLAGS="-L$HOMEBREW_HOME/lib -framework OpenGL -L/opt/X11/lib"
+export CPPFLAGS="-I$HOMEBREW_HOME/include"
+# export PKG_CONFIG_LIBDIR="$MACPORTS_HOME/lib/pkconfig"
+export PATH=$HOMEBREW_HOME/opt/gcc/bin:$PATH
 export LC_CTYPE=C
 export LANG=C
+export CC=gcc
+# export CXX=clang
+# export PATH=$HOMEBREW_HOME/opt/llvm/bin:$PATH
+# export ARCHFLAGS="-arch x86_64"
 
-# SSH with passwords, if passwords in 1Password
-alias sshwp='~/ssh_login.sh'
+
+# Kerberos config
+export PATH=$HOMEBREW_HOME/opt/krb5/bin:$PATH
+export PATH=$HOMEBREW_HOME/opt/krb5/sbin:$PATH
+export LDFLAGS="$LDFLAGS -L$HOMEBREW_HOME/opt/krb5/lib"
+export CPPFLAGS="$CPPFLAGS -I$HOMEBREW_HOME/opt/krb5/include"
+# export LDFLAGS="-L$HOMEBREW_HOME/opt/krb5/lib"
+# export CPPFLAGS="-I$HOMEBREW_HOME/opt/krb5/include"
+
+# ODBC config
+# export PATH="$HOMEBREW_HOME/opt/unixodbc/bin:$PATH"
+# export LDFLAGS="-L$HOMEBREW_HOME/opt/unixodbc/lib"
+# export CPPFLAGS="-I$HOMEBREW_HOME/opt/unixodbc/include"
+
+# Bison config
+# export PATH="$HOMEBREW_HOME/opt/bison/bin:$PATH"
+
+# GNUTLS config
+# export PATH="$HOMEBREW_HOME/opt/gnutls/bin:$PATH"
+# export LDFLAGS="-L$HOMEBREW_HOME/opt/gnutls/lib"
+
+# OpenGL config
+# export LDFLAGS="-L/opt/X11/lib"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -142,11 +171,14 @@ alias sshwp='~/ssh_login.sh'
 # eval $(thefuck --alias)
 
 # Add Doom Emacs
-export PATH=$PATH:$HOME/.emacs.d/bin
+# export PATH=$PATH:$HOME/.emacs.d/bin
 
 # Convenient aliases
 alias myip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias tmux="TERM=screen-256color-bce tmux -2 -u"
+# SSH with passwords, if passwords in 1Password
+alias sshwp='~/ssh_login.sh'
+
 
 # Lua configuration
 export DYLD_LIBRARY_PATH=$HOMEBREW_HOME/lib/
@@ -158,29 +190,29 @@ export DYLD_LIBRARY_PATH=$HOMEBREW_HOME/lib/
 # export PATH=$RBENV_HOME/bin:$PATH
 
 # Java configuration
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
+# export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
 # export JAVA_HOME=$(/usr/libexec/java_home)
-export PATH=$JAVA_HOME/bin:$PATH
-export PATH=$PATH:$JAVA_HOME/jre/bin
+# export PATH=$JAVA_HOME/bin:$PATH
+# export PATH=$PATH:$JAVA_HOME/jre/bin
 
 # Oracle SQL CL
 export ORACLE_HOME=$HOME/oracle
-export PATH=$HOMEBREW_HOME/Caskroom/sqlcl/*/sqlcl/bin:"$PATH"
+export PATH="$PATH:$HOMEBREW_HOME/Caskroom/sqlcl/*/sqlcl/bin:"
 export PATH=$PATH:$ORACLE_HOME
 
 # Javascript configurations
-export DENO_INSTALL="$HOME/.deno"
-export PATH="$DENO_INSTALL/bin:$PATH"
+# export DENO_INSTALL="$HOME/.deno"
+# export PATH="$PATH:$DENO_INSTALL/bin"
 
 # Configure Python
 export PYENV_ROOT="$HOME/.pyenv"
 export VIRTUALENVWRAPPER_PYTHON="$PYENV_ROOT/shims/python3"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+command -v pyenv >/dev/null || export PATH="$PATH:$PYENV_ROOT/bin"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 pyenv virtualenvwrapper_lazy
 
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$PATH:$HOME/.local/bin"
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/repos
 
@@ -188,26 +220,26 @@ export PROJECT_HOME=$HOME/repos
 # source /etc/environment
 #when running spark locally, it uses 2 cores, hence local[2]
 # export PYSPARK_SUBMIT_ARGS="--master local[2] pyspark-shell"
-export SPARK_HOME=/opt/spark
-export PATH=$SPARK_HOME/bin:$PATH
-export PYSPARK_DRIVER_PYTHON=jupyter
-export PYSPARK_DRIVER_PYTHON_OPTS='notebook'
-export PYSPARK_PYTHON=python3
+# export SPARK_HOME=/opt/spark
+# export PATH=$PATH:$SPARK_HOME/bin
+# export PYSPARK_DRIVER_PYTHON=jupyter
+# export PYSPARK_DRIVER_PYTHON_OPTS='notebook'
+# export PYSPARK_PYTHON=python3
 
-export CONDA_AUTO_ACTIVATE_BASE=false
+# export CONDA_AUTO_ACTIVATE_BASE=false
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/opt/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/opt/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
+# __conda_setup="$('/opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+# if [ $? -eq 0 ]; then
+#     eval "$__conda_setup"
+# else
+#     if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
+#         . "/opt/miniconda3/etc/profile.d/conda.sh"
+#     else
+#         export PATH="$PATH:/opt/miniconda3/bin"
+#     fi
+# fi
+# unset __conda_setup
 # <<< conda initialize <<<
 
 fpath+=${ZDOTDIR:-~}/.zsh_functions
@@ -219,3 +251,7 @@ fpath+=${ZDOTDIR:-~}/.zsh_functions
 
 # To customize prompt, run `p10k configure` or edit ~/Documents/dotfiles/.p10k.zsh.
 [[ ! -f ~/Documents/dotfiles/.p10k.zsh ]] || source ~/Documents/dotfiles/.p10k.zsh
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

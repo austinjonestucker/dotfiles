@@ -96,7 +96,7 @@ else
 end
 
 -- Editor styling
-config.color_scheme = 'Kanagawa (Gogh)'
+config.color_scheme = 'Tokyo Night Moon'
 config.font = wezterm.font('MesloLGS NF')
 config.freetype_load_flags = 'NO_HINTING'
 config.line_height = 0.925
