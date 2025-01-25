@@ -79,7 +79,7 @@ config.mouse_bindings = {
 
 -- Window padding
 config.window_padding = {
-  left = '0',
+  left = '5',
   right = '0',
   top = '8',
   bottom = '0',

@@ -106,25 +106,27 @@ source $ZSH/oh-my-zsh.sh
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# Convenient aliases
+alias myip='dig +short myip.opendns.com @resolver1.opendns.com'
+alias tmux="TERM=screen-256color-bce tmux -2 -u"
+# SSH with passwords, if passwords in 1Password
+alias sshwp='~/ssh_login.sh'
 alias der="dotenv run"
 alias vim="nvim"
 
 # Add zmv
 autoload zmv
 
-# GPG config
-export GPG_TTY=$(tty)
+# Add thefuck
+# eval $(thefuck --alias)
 
-# Kitty config
-export KITTY_CONFIG_DIRECTORY="/Users/{$USER}/.config/kitty"
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Mac OS only config
-# export HOMEBREW_HOME="/opt/homebrew"
-export HOMEBREW_HOME="/usr/local"
+export HOMEBREW_HOME="/opt/homebrew"
+# export HOMEBREW_HOME="/usr/local"
 export MACPORTS_HOME="/opt/local"
 
 # C Compilation
@@ -135,7 +137,7 @@ export CPPFLAGS="-I$HOMEBREW_HOME/include"
 export PATH=$HOMEBREW_HOME/opt/gcc/bin:$PATH
 export LC_CTYPE=C
 export LANG=C
-export CC=gcc
+export CC=clang
 # export CXX=clang
 # export PATH=$HOMEBREW_HOME/opt/llvm/bin:$PATH
 # export ARCHFLAGS="-arch x86_64"
@@ -149,11 +151,6 @@ export CPPFLAGS="$CPPFLAGS -I$HOMEBREW_HOME/opt/krb5/include"
 # export LDFLAGS="-L$HOMEBREW_HOME/opt/krb5/lib"
 # export CPPFLAGS="-I$HOMEBREW_HOME/opt/krb5/include"
 
-# ODBC config
-# export PATH="$HOMEBREW_HOME/opt/unixodbc/bin:$PATH"
-# export LDFLAGS="-L$HOMEBREW_HOME/opt/unixodbc/lib"
-# export CPPFLAGS="-I$HOMEBREW_HOME/opt/unixodbc/include"
-
 # Bison config
 # export PATH="$HOMEBREW_HOME/opt/bison/bin:$PATH"
 
@@ -164,47 +161,40 @@ export CPPFLAGS="$CPPFLAGS -I$HOMEBREW_HOME/opt/krb5/include"
 # OpenGL config
 # export LDFLAGS="-L/opt/X11/lib"
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# GPG config
+export GPG_TTY=$(tty)
 
-# Add thefuck
-# eval $(thefuck --alias)
-
-# Add Doom Emacs
-# export PATH=$PATH:$HOME/.emacs.d/bin
-
-# Convenient aliases
-alias myip='dig +short myip.opendns.com @resolver1.opendns.com'
-alias tmux="TERM=screen-256color-bce tmux -2 -u"
-# SSH with passwords, if passwords in 1Password
-alias sshwp='~/ssh_login.sh'
-
+# Kitty config
+export KITTY_CONFIG_DIRECTORY="$HOME/.config/kitty"
 
 # Lua configuration
 export DYLD_LIBRARY_PATH=$HOMEBREW_HOME/lib/
 
-# Ruby configurations
+# Ruby config
 # eval "$(rbenv init -)"
 # export RBENV_VERSION="3.3.0"
 # export RBENV_HOME="$HOME/.gem/ruby/$RBENV_VERSION"
 # export PATH=$RBENV_HOME/bin:$PATH
 
-# Java configuration
-# export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
-# export JAVA_HOME=$(/usr/libexec/java_home)
-# export PATH=$JAVA_HOME/bin:$PATH
-# export PATH=$PATH:$JAVA_HOME/jre/bin
+# Postgres CLI config
+export PATH="$HOMEBREW_HOME/opt/libpq/bin:$PATH"
 
-# Oracle SQL CL
+# ODBC CLI config
+# export PATH="$HOMEBREW_HOME/opt/unixodbc/bin:$PATH"
+# export LDFLAGS="-L$HOMEBREW_HOME/opt/unixodbc/lib"
+# export CPPFLAGS="-I$HOMEBREW_HOME/opt/unixodbc/include"
+
+# Oracle SQL CLI config
 export ORACLE_HOME=$HOME/oracle
 export PATH="$PATH:$HOMEBREW_HOME/Caskroom/sqlcl/*/sqlcl/bin:"
 export PATH=$PATH:$ORACLE_HOME
 
-# Javascript configurations
-# export DENO_INSTALL="$HOME/.deno"
-# export PATH="$PATH:$DENO_INSTALL/bin"
+# Javascript config
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# Configure Python
+# Python config
 export PYENV_ROOT="$HOME/.pyenv"
 export VIRTUALENVWRAPPER_PYTHON="$PYENV_ROOT/shims/python3"
 command -v pyenv >/dev/null || export PATH="$PATH:$PYENV_ROOT/bin"
@@ -216,15 +206,15 @@ export PATH="$PATH:$HOME/.local/bin"
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/repos
 
-# PySpark configuration
+# PySpark config
 # source /etc/environment
 #when running spark locally, it uses 2 cores, hence local[2]
-# export PYSPARK_SUBMIT_ARGS="--master local[2] pyspark-shell"
-# export SPARK_HOME=/opt/spark
-# export PATH=$PATH:$SPARK_HOME/bin
-# export PYSPARK_DRIVER_PYTHON=jupyter
-# export PYSPARK_DRIVER_PYTHON_OPTS='notebook'
-# export PYSPARK_PYTHON=python3
+export PYSPARK_SUBMIT_ARGS="--master local[2] pyspark-shell"
+export SPARK_HOME=/opt/spark
+export PATH=$PATH:$SPARK_HOME/bin
+export PYSPARK_DRIVER_PYTHON=jupyter
+export PYSPARK_DRIVER_PYTHON_OPTS='notebook'
+export PYSPARK_PYTHON=python3
 
 # export CONDA_AUTO_ACTIVATE_BASE=false
 # >>> conda initialize >>>
