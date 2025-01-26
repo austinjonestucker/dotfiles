@@ -121,6 +121,19 @@ autoload zmv
 # Add thefuck
 # eval $(thefuck --alias)
 
+# SSH configs
+function ssh() {
+  if [ $TERM = "xterm-kitty" ]; then
+    kitty +kitten ssh "$@"
+  else
+    command $0 "$@"
+  fi
+}
+
+# Used if SSH prompts for password (requires custom file for pwd fetch)
+export SSH_ASKPASS_REQUIRE=force
+export SSH_ASKPASS="$HOME/ssh_get_pw.sh"
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 

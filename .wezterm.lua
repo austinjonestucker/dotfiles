@@ -97,8 +97,7 @@ end
 
 -- Editor styling
 config.color_scheme = 'Tokyo Night Moon'
-config.font = wezterm.font('MesloLGS NF')
-config.freetype_load_flags = 'NO_HINTING'
+config.font = wezterm.font('JetBrainsMono Nerd Font')
 config.line_height = 0.925
 config.default_cursor_style = 'BlinkingBlock'
 config.cursor_blink_rate = 500
