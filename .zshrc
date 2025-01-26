@@ -225,8 +225,8 @@ export PROJECT_HOME=$HOME/repos
 export PYSPARK_SUBMIT_ARGS="--master local[2] pyspark-shell"
 export SPARK_HOME=/opt/spark
 export PATH=$PATH:$SPARK_HOME/bin
-export PYSPARK_DRIVER_PYTHON=jupyter
-export PYSPARK_DRIVER_PYTHON_OPTS='notebook'
+# export PYSPARK_DRIVER_PYTHON=jupyter
+# export PYSPARK_DRIVER_PYTHON_OPTS='notebook'
 export PYSPARK_PYTHON=python3
 
 # export CONDA_AUTO_ACTIVATE_BASE=false
