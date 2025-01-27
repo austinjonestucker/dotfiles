@@ -1,3 +1,3 @@
 -- file: nvim/ftplugin/markdown.lua
 
-require("quarto").activate()
+-- require("quarto").activate()
