@@ -96,7 +96,7 @@ else
 end
 
 -- Editor styling
-config.color_scheme = 'Tokyo Night Moon'
+config.color_scheme = 'Dracula'
 config.font = wezterm.font('JetBrainsMono Nerd Font')
 config.line_height = 0.925
 config.default_cursor_style = 'BlinkingBlock'

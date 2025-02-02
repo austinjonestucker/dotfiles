@@ -1,0 +1,3 @@
+theme = jubi
+quick-terminal-position = right
+keybind = global:ctrl+grave_accent=toggle_quick_terminal
