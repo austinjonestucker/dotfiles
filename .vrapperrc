@@ -1,0 +1,8 @@
+set ignorecase
+set smartcase
+set novisualmouse
+set clipboard=unnamedplus
+set nohlsearch
+set number
+set list
+set startnormalmode
