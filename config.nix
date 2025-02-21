@@ -7,6 +7,7 @@
             ripgrep
             fzf
             jq
+            starship
             lazygit
             bash-completion
             nodejs_22
