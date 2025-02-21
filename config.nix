@@ -10,7 +10,7 @@
             bash-completion
             nodejs_22
             neofetch
-          ]
-       }
-    }
+          ];
+       };
+    };
 }
