@@ -1,7 +1,5 @@
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
-# export JAVA_HOME=$(/usr/libexec/java_home)
-export PATH=$JAVA_HOME/bin:$PATH
-export PATH=$PATH:$JAVA_HOME/jre/bin
-. "$HOME/.cargo/env"
+alias der="dotenv run"
+alias v="nvim"
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+# Set up fzf key bindings and fuzzy completion
+eval "$(fzf --bash)"

@@ -114,6 +114,7 @@ alias tmux="TERM=screen-256color-bce tmux -2 -u"
 alias sshwp='~/ssh_login.sh'
 alias der="dotenv run"
 alias vim="nvim"
+alias v="nvim"
 
 # Add zmv
 autoload zmv
@@ -247,7 +248,8 @@ export PYSPARK_PYTHON=python3
 
 fpath+=${ZDOTDIR:-~}/.zsh_functions
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# Set up fzf key bindings and fuzzy completion
+source <(fzf --zsh)
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
