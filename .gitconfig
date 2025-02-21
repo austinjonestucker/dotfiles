@@ -1,8 +1,9 @@
-[user]
-    email = austin.jones.tucker@gmail.com
-    name = Austin Tucker
 [commit]
     gpgsign = true
+[user]
+    signingkey = 33B693D28664C19A
+    email = austin.jones.tucker@gmail.com
+    name = Austin Tucker
 [core]
     pager = delta
 [push]
@@ -22,3 +23,7 @@
     conflictstyle = zdiff3
 [diff]
     colorMoved = default
+[credential]
+    helper = /usr/local/share/gcm-core/git-credential-manager
+[credential "https://dev.azure.com"]
+    useHttpPath = true
