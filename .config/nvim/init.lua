@@ -44,6 +44,9 @@ vim.o.clipboard = 'unnamedplus'
 -- Enable break indent
 vim.o.breakindent = true
 
+--Disable smart indent
+vim.o.smartindent = false
+
 -- Save undo history
 vim.o.undofile = true
 

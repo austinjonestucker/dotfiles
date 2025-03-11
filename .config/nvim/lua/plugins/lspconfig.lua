@@ -87,7 +87,7 @@ return {
         pylsp = {},
 
         -- rust_analyzer = {},
-        -- tsserver = {},
+        ts_ls = {},
         -- html = {},
         -- cssls = {},
         -- sqlls = { filetypes = { "sql" } },

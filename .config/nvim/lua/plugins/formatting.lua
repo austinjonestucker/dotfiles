@@ -6,6 +6,8 @@ return {
       local lint = require 'lint'
       lint.linters_by_ft = {
         python = { 'ruff' },
+        typscript = { 'eslint_d' },
+        javascript = { 'eslint_d' },
       }
       vim.keymap.set({ 'n', 'v' }, '<leader>ml', function()
         lint.try_lint()
@@ -26,6 +28,8 @@ return {
       conform.setup {
         formatters_by_ft = {
           lua = { 'stylua' },
+          javascript = { 'prettier' },
+          typscript = { 'prettier' },
           python = { 'ruff_format' },
         },
       }
