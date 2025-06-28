@@ -107,6 +107,8 @@ source $ZSH/oh-my-zsh.sh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 
+export XDG_CONFIG_HOME="$HOME/.config"
+
 # Convenient aliases
 alias myip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias tmux="TERM=screen-256color-bce tmux -2 -u"
@@ -114,7 +116,6 @@ alias tmux="TERM=screen-256color-bce tmux -2 -u"
 alias sshwp='~/ssh_login.sh'
 alias der="dotenv run"
 alias vim="nvim"
-alias v="nvim"
 
 # Add zmv
 autoload zmv
@@ -123,17 +124,20 @@ autoload zmv
 # eval $(thefuck --alias)
 
 # SSH configs
+# Used if SSH prompts for password (requires custom file for pwd fetch)
 function ssh() {
-  if [ $TERM = "xterm-kitty" ]; then
+  # change based on usage
+  CHECK_USER="atucker"
+  USER=$(echo "$1" | cut -d'@' -f1)
+  if [[ ($TERM = "xterm-kitty") && ($USER = $CHECK_USER) ]]; then
     kitty +kitten ssh "$@"
     export SSH_ASKPASS_REQUIRE=force
     export SSH_ASKPASS="$HOME/ssh_get_pw.sh"
   else
+    unset SSH_ASKPASS_REQUIRE
     command $0 "$@"
   fi
 }
-
-# Used if SSH prompts for password (requires custom file for pwd fetch)
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -179,10 +183,13 @@ export CPPFLAGS="$CPPFLAGS -I$HOMEBREW_HOME/opt/krb5/include"
 export GPG_TTY=$(tty)
 
 # Kitty config
-export KITTY_CONFIG_DIRECTORY="$HOME/.config/kitty"
+export KITTY_CONFIG_DIRECTORY="$XDG_CONFIG_HOME/kitty"
 
 # Lua configuration
 export DYLD_LIBRARY_PATH=$HOMEBREW_HOME/lib/
+
+# Rust config
+export PATH="$HOME/.cargo/bin:$PATH"
 
 # Ruby config
 # eval "$(rbenv init -)"
@@ -251,12 +258,16 @@ fpath+=${ZDOTDIR:-~}/.zsh_functions
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 
-# Generated for envman. Do not edit.
-[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
-
-# To customize prompt, run `p10k configure` or edit ~/Documents/dotfiles/.p10k.zsh.
-[[ ! -f ~/Documents/dotfiles/.p10k.zsh ]] || source ~/Documents/dotfiles/.p10k.zsh
-
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+export PATH="$HOME/.rd/bin:$PATH"
+### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
+
+# Added by dbt installer
+export PATH="$PATH:$HOME/.local/bin"
+
+# dbt aliases
+alias dbtf=$HOME/.local/bin/dbt

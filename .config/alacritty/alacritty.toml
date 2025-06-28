@@ -1,13 +1,6 @@
-# Configuration for Alacritty, the GPU-accelerated terminal emulator.
-
-# Add theme locally
-import = ["~/.config/alacritty/themes/themes/kanagawa_wave.toml"]
 
 [env]
 TERM = "xterm-256color"
-
-[colors]
-draw_bold_text_with_bright_colors = true
 
 [cursor]
 blink_interval = 1000
@@ -16,10 +9,10 @@ vi_mode_style = "block"
 
 [font]
 size = 13.0
-normal.family = "MesloLGS NF"
-normal.style = "Regular"
+normal.family = "MesloLGS Nerd Font"
 
 [window]
+padding = {x = 0, y = 5}
 decorations = "none"
 
 [scrolling]
@@ -27,3 +20,9 @@ history = 10000
 
 [selection]
 save_to_clipboard = true
+
+[general]
+# Configuration for Alacritty, the GPU-accelerated terminal emulator.
+
+# Add theme locally
+import = ["~/.config/alacritty/themes/themes/kanagawa_wave.toml"]

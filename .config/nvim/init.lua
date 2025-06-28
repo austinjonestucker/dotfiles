@@ -21,7 +21,17 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require('lazy').setup 'plugins'
+require('lazy').setup({
+  { import = "plugins",              cond = (function() return not vim.g.vscode end) },
+  { import = "vscode_plugins",       cond = (function() return vim.g.vscode end) }
+})
+
+if vim.g.vscode then
+  -- VSCode Neovim
+  require "vscode_keymaps"
+else
+  -- Ordinary Neovim
+end
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -46,6 +56,9 @@ vim.o.breakindent = true
 
 --Disable smart indent
 vim.o.smartindent = false
+
+-- Translate tabs to spaces
+vim.o.expandtab = true
 
 -- Save undo history
 vim.o.undofile = true
