@@ -6,3 +6,5 @@ eval "$(fzf --bash)"
 
 # Set up starship prompt
 eval "$(starship init bash)"
+
+export XDG_CONFIG_HOME="$HOME/.config"

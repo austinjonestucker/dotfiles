@@ -4,8 +4,8 @@ return {
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs to stdpath for neovim
-      { 'williamboman/mason.nvim', config = true },
-      'williamboman/mason-lspconfig.nvim',
+      { 'mason-org/mason.nvim', config = true },
+      'mason-org/mason-lspconfig.nvim',
 
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
@@ -80,26 +80,6 @@ return {
         -- end, { desc = 'Format current buffer with LSP' })
       end
 
-      local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
-        pylsp = {},
-
-        -- rust_analyzer = {},
-        ts_ls = {},
-        -- html = {},
-        -- cssls = {},
-        -- sqlls = { filetypes = { "sql" } },
-
-        lua_ls = {
-          Lua = {
-            workspace = { checkThirdParty = false },
-            telemetry = { enable = false },
-          },
-        },
-      }
-
       -- Setup neovim lua configuration
       require('neodev').setup()
 
@@ -108,8 +88,7 @@ return {
       capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
       -- Ensure the servers above are installed
-      local lspconfig = require("lspconfig")
-      lspconfig.lua_ls.setup({
+      vim.lsp.config('lua_ls', {
         capabilities = capabilities,
         on_attach = on_attach,
         settings = {
@@ -128,7 +107,7 @@ return {
         },
       })
 
-      lspconfig.ts_ls.setup({
+      vim.lsp.config('ts_ls', {
         capabilities = capabilities,
         on_attach = on_attach,
         settings = {
@@ -157,11 +136,11 @@ return {
         },
       })
 
-      lspconfig.pylsp.setup({
+      vim.lsp.config('pylsp', {
         capabilities = capabilities,
         on_attach = on_attach,
         settings = {
-          pylsp = {
+          ['pylsp'] = {
             plugins = {
               pycodestyle = {
                 ignore = { 'E501' },

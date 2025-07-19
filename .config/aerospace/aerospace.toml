@@ -212,11 +212,19 @@ automatically-unhide-macos-hidden-apps = true
     run = 'move-node-to-workspace A' # mnemonics A - Admin
 
 [[on-window-detected]]
+    if.app-id = 'com.openai.chat'
+    run = 'move-node-to-workspace A' # mnemonics A - Admin
+
+[[on-window-detected]]
     if.app-id = 'com.tinyspeck.slackmacgap'
     run = 'move-node-to-workspace C' # mnemonics C - Chat
 
 [[on-window-detected]]
     if.app-id = 'com.apple.MobileSMS'
+    run = 'move-node-to-workspace C' # mnemonics C - Chat
+
+[[on-window-detected]]
+    if.app-id = 'net.whatsapp.WhatsApp'
     run = 'move-node-to-workspace C' # mnemonics C - Chat
 
 [[on-window-detected]]
@@ -230,10 +238,6 @@ automatically-unhide-macos-hidden-apps = true
 [[on-window-detected]]
     if.app-id = 'com.oracle.java.java'
     run = ['move-node-to-workspace D'] # mnemonics D - Database
-
-[[on-window-detected]]
-    if.app-id = 'com.microsoft.VSCode'
-    run = 'move-node-to-workspace D' # mnemonics D - Database
 
 [[on-window-detected]]
     if.app-id = 'com.apple.Mail'
@@ -258,6 +262,10 @@ automatically-unhide-macos-hidden-apps = true
 [[on-window-detected]]
     if.app-id = 'com.tableausoftware.tableaudesktop'
     run = ['layout floating', 'move-node-to-workspace I'] # mnemonics I - IDE
+
+[[on-window-detected]]
+    if.app-id = 'com.microsoft.VSCode'
+    run = 'move-node-to-workspace I' # mnemonics I - IDE
 
 [[on-window-detected]]
     if.app-id = 'com.apple.Music'
@@ -300,6 +308,10 @@ automatically-unhide-macos-hidden-apps = true
     run = 'move-node-to-workspace R' # mnemonics R - Reading
 
 [[on-window-detected]]
+    if.app-id = 'com.adobe.Acrobat.Pro'
+    run = 'move-node-to-workspace R' # mnemonics R - Reading
+
+[[on-window-detected]]
     if.app-id = 'com.apple.Preview'
     run = 'move-node-to-workspace R' # mnemonics R - Reading
 
@@ -332,6 +344,10 @@ automatically-unhide-macos-hidden-apps = true
     run = 'move-node-to-workspace T' # mnemonics T - Terminal
 
 [[on-window-detected]]
+    if.app-id = 'sh.loft.devpod'
+    run = 'move-node-to-workspace T' # mnemonics T - Terminal
+
+[[on-window-detected]]
     if.app-id = 'us.zoom.xos'
     run = 'move-node-to-workspace V' # mnemonics V - Video
 
@@ -345,4 +361,8 @@ automatically-unhide-macos-hidden-apps = true
 
 [[on-window-detected]]
     if.app-id = 'company.thebrowser.Browser'
+    run = 'move-node-to-workspace W' # mnemonics W - Web
+
+[[on-window-detected]]
+    if.app-id = 'app.zen-browser.zen'
     run = 'move-node-to-workspace W' # mnemonics W - Web
