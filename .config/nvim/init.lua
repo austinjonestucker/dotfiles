@@ -59,6 +59,7 @@ vim.o.smartindent = false
 
 -- Translate tabs to spaces
 vim.o.expandtab = true
+vim.o.tabstop = 4
 
 -- Save undo history
 vim.o.undofile = true

@@ -275,3 +275,18 @@ alias dbtf=$HOME/.local/bin/dbt
 # Starship prompt (only one prompt should be enabled)
 # eval "$(starship init zsh)"
 
+# Colima / Docker config
+#  It should point to Colima's socket:
+export DOCKER_HOST="unix://${XDG_CONFIG_HOME}/colima/default/docker.sock"
+
+# Testcontainers needs to know how to resolve the Colima host.
+export TESTCONTAINERS_HOST_OVERRIDE=$(colima ls -j | jq -r '.address')
+
+# For containers to communicate with Docker
+export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f "${HOMEBREW_HOME}/share/google-cloud-sdk/path.zsh.inc" ]; then . "${HOMEBREW_HOME}/share/google-cloud-sdk/path.zsh.inc"; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f "${HOMEBREW_HOME}/share/google-cloud-sdk/completion.zsh.inc" ]; then . "${HOMEBREW_HOME}/share/google-cloud-sdk/completion.zsh.inc"; fi
