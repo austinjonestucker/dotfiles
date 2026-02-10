@@ -8,6 +8,7 @@ return {
         python = { 'ruff' },
         typscript = { 'eslint_d' },
         javascript = { 'eslint_d' },
+        sql = { 'sqruff' },
       }
       vim.keymap.set({ 'n', 'v' }, '<leader>ml', function()
         lint.try_lint()
@@ -31,6 +32,7 @@ return {
           javascript = { 'prettier' },
           typscript = { 'prettier' },
           python = { 'ruff_format' },
+          sql = { 'sqruff'},
         },
       }
       vim.keymap.set({ 'n', 'v' }, '<leader>mf', function()
