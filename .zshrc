@@ -131,10 +131,14 @@ function ssh() {
   # change based on usage
   CHECK_USER="atucker"
   USER=$(echo "$1" | cut -d'@' -f1)
-  if [[ ($TERM = "xterm-kitty") && ($USER = $CHECK_USER) ]]; then
-    kitty +kitten ssh "$@"
-    export SSH_ASKPASS_REQUIRE=force
-    export SSH_ASKPASS="$HOME/ssh_get_pw.sh"
+  if [[ ($USER = $CHECK_USER) ]]; then
+      export SSH_ASKPASS_REQUIRE=force
+      export SSH_ASKPASS="$HOME/ssh_get_pw.sh"
+    if [[ ($TERM = "xterm-kitty") ]]; then
+      kitty +kitten ssh "$@"
+    elif [[ ($TERM = "xterm-256color") ]]; then
+      command $0 "$@"
+    fi
   else
     unset SSH_ASKPASS_REQUIRE
     command $0 "$@"

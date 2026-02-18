@@ -5,10 +5,10 @@ return {
     config = function()
       local lint = require 'lint'
       lint.linters_by_ft = {
-        python = { 'ruff' },
-        typscript = { 'eslint_d' },
         javascript = { 'eslint_d' },
-        sql = { 'sqruff' },
+        python = { 'ruff' },
+        sql = { 'sqlfluff' },
+        typscript = { 'eslint_d' },
       }
       vim.keymap.set({ 'n', 'v' }, '<leader>ml', function()
         lint.try_lint()
@@ -28,18 +28,18 @@ return {
       local conform = require 'conform'
       conform.setup {
         formatters_by_ft = {
-          lua = { 'stylua' },
           javascript = { 'prettier' },
-          typscript = { 'prettier' },
+          lua = { 'stylua' },
           python = { 'ruff_format' },
-          sql = { 'sqruff'},
+          sql = { 'sqlfmt'},
+          typscript = { 'prettier' },
         },
       }
       vim.keymap.set({ 'n', 'v' }, '<leader>mf', function()
         conform.format {
           lsp_fallback = true,
           async = false,
-          timeout_ms = 500,
+          timeout_ms = 1000,
         }
       end, { desc = 'Format file or range (in visual mode)' })
     end,
