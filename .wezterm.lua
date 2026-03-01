@@ -309,7 +309,7 @@ config.keys = {
     action = act({ EmitEvent = "save_session" }),
   },
   {
-    key = 'L',
+    key = 'O',
     mods = 'LEADER|SHIFT',
     action = act({ EmitEvent = "load_session" }),
   },
@@ -427,7 +427,7 @@ wezterm.on('update-status',
       end
     end
 
-    if fg_process_name == '/usr/bin/ssh' then
+    if fg_process_name == '/usr/bin/ssh' or fg_process_name == '/usr/bin/scp' then
       if string.find(server, prd_indicator) then
         overrides.color_scheme = prd_ssh_theme
       else

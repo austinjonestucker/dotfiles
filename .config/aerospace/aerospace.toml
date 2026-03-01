@@ -224,6 +224,10 @@ automatically-unhide-macos-hidden-apps = true
     run = 'move-node-to-workspace C' # mnemonics C - Chat
 
 [[on-window-detected]]
+    if.app-id = 'com.apple.mobilephone'
+    run = 'move-node-to-workspace C' # mnemonics C - Chat
+
+[[on-window-detected]]
     if.app-id = 'net.whatsapp.WhatsApp'
     run = 'move-node-to-workspace C' # mnemonics C - Chat
 
@@ -312,6 +316,10 @@ automatically-unhide-macos-hidden-apps = true
 #     run = 'move-node-to-workspace P' # mnemonics P - Password
 
 [[on-window-detected]]
+    if.app-id = 'com.bitwarden.desktop'
+    run = 'move-node-to-workspace P' # mnemonics P - Password
+
+[[on-window-detected]]
     if.app-id = 'com.adobe.Reader'
     run = 'move-node-to-workspace R' # mnemonics R - Reading
 
@@ -377,4 +385,8 @@ automatically-unhide-macos-hidden-apps = true
 
 [[on-window-detected]]
     if.app-id = 'app.zen-browser.zen'
+    run = 'move-node-to-workspace W' # mnemonics W - Web
+
+[[on-window-detected]]
+    if.app-id = 'com.brave.Browser'
     run = 'move-node-to-workspace W' # mnemonics W - Web
