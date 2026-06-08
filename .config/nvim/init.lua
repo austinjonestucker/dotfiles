@@ -22,23 +22,15 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-  { import = "plugins",              cond = (function() return not vim.g.vscode end) },
-  { import = "vscode_plugins",       cond = (function() return vim.g.vscode end) }
+  { import = "plugins" },
 })
-
-if vim.g.vscode then
-  -- VSCode Neovim
-  require "vscode_keymaps"
-else
-  -- Ordinary Neovim
-end
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
 
 -- Set highlight on search
-vim.o.hlsearch = false
+vim.o.hlsearch = true
 
 -- Make line numbers default
 vim.wo.number = true
@@ -69,7 +61,7 @@ vim.o.ignorecase = true
 vim.o.smartcase = true
 
 -- Keep signcolumn on by default
-vim.wo.signcolumn = 'yes'
+vim.wo.signcolumn = 'auto:1'
 
 -- Decrease update time
 vim.o.updatetime = 250
@@ -85,13 +77,17 @@ vim.o.termguicolors = true
 vim.opt.listchars = { tab = '>--', trail = '~', extends = '>', precedes = '<', space = '·', eol = '$' }
 vim.o.list = true
 vim.o.relativenumber = true
+vim.o.numberwidth = 1
+
+vim.o.foldenable = false
+vim.opt.foldlevelstart = 99
 
 -- [[ Basic Keymaps ]]
 
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
-vim.keymap.set({'n', 'v'}, '/', "/\\v", { noremap = true, silent = true })
+-- vim.keymap.set({'n', 'v'}, '/', "/\\v", { noremap = true, silent = true })
 
 -- Remap for dealing with word wrap
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
@@ -108,11 +104,37 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(args)
+    local bufnr = args.buf
+    local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+
+    if client:supports_method(vim.lsp.protocol.Methods.textDocument_inlineCompletion, bufnr) then
+      vim.lsp.inline_completion.enable(true, { bufnr = bufnr })
+
+      vim.keymap.set(
+        'i',
+        '<C-l>',
+        vim.lsp.inline_completion.get,
+        { desc = 'LSP: accept inline completion', buffer = bufnr }
+      )
+      vim.keymap.set(
+        'i',
+        '<C-;>',
+        vim.lsp.inline_completion.select,
+        { desc = 'LSP: switch inline completion', buffer = bufnr }
+      )
+    end
+  end
+})
+
 -- Diagnostic keymaps
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
+vim.keymap.set('n', '[d', function() vim.diagnostic.jump({ count = 1, float = true}) end, { desc = 'Go to previous diagnostic message' })
+vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = -1, float = true}) end, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
+
+-- Custom statuscolumn with mini.diff signs and hybrid line numbers
+vim.o.statuscolumn = "%s%{v:relnum == 0 ? v:lnum : v:relnum}"
 
 -- Example for configuring Neovim to load user-installed installed Lua rocks:
 package.path = package.path .. ';' .. vim.fn.expand '$HOME' .. '/.luarocks/share/lua/5.1/?/init.lua;'

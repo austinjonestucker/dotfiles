@@ -145,6 +145,11 @@ function ssh() {
   fi
 }
 
+# usql config
+function usql() {
+  command ~/.local/bin/usql "$@"
+}
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
@@ -152,6 +157,7 @@ function ssh() {
 export HOMEBREW_HOME="/opt/homebrew"
 # export HOMEBREW_HOME="/usr/local"
 export MACPORTS_HOME="/opt/local"
+export WORKSPACE="$HOME/work/repos"
 
 # C Compilation
 export PATH="$HOMEBREW_HOME/bin:$PATH"
@@ -160,8 +166,10 @@ export CPPFLAGS="-I$HOMEBREW_HOME/include"
 # export PKG_CONFIG_LIBDIR="$MACPORTS_HOME/lib/pkconfig"
 export PATH=$HOMEBREW_HOME/opt/gcc/bin:$PATH
 export LC_CTYPE=C
-export LANG=C
 export CC=clang
+
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 # export CXX=clang
 # export PATH=$HOMEBREW_HOME/opt/llvm/bin:$PATH
 # export ARCHFLAGS="-arch x86_64"
@@ -197,6 +205,9 @@ export DYLD_LIBRARY_PATH=$HOMEBREW_HOME/lib/
 # Rust config
 export PATH="$HOME/.cargo/bin:$PATH"
 
+# Go config
+export PATH="$PATH:$HOME/go/bin"
+
 # Ruby config
 # eval "$(rbenv init -)"
 # export RBENV_VERSION="3.3.0"
@@ -229,7 +240,7 @@ eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 pyenv virtualenvwrapper_lazy
 
-export PATH="$PATH:$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/repos
 

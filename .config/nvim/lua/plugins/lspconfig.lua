@@ -1,3 +1,64 @@
+---@param bufnr integer,
+---@param client vim.lsp.Client
+local function sign_in(bufnr, client)
+  client:request(
+    ---@diagnostic disable-next-line: param-type-mismatch
+    'signIn',
+    vim.empty_dict(),
+    function(err, result)
+      if err then
+        vim.notify(err.message, vim.log.levels.ERROR)
+        return
+      end
+      if result.command then
+        local code = result.userCode
+        local command = result.command
+        vim.fn.setreg('+', code)
+        vim.fn.setreg('*', code)
+        local continue = vim.fn.confirm(
+          'Copied your one-time code to clipboard.\n' .. 'Open the browser to complete the sign-in process?',
+          '&Yes\n&No'
+        )
+        if continue == 1 then
+          client:exec_cmd(command, { bufnr = bufnr }, function(cmd_err, cmd_result)
+            if cmd_err then
+              vim.notify(cmd_err.message, vim.log.levels.ERROR)
+              return
+            end
+            if cmd_result.status == 'OK' then
+              vim.notify('Signed in as ' .. cmd_result.user .. '.')
+            end
+          end)
+        end
+      end
+
+      if result.status == 'PromptUserDeviceFlow' then
+        vim.notify('Enter your one-time code ' .. result.userCode .. ' in ' .. result.verificationUri)
+      elseif result.status == 'AlreadySignedIn' then
+        vim.notify('Already signed in as ' .. result.user .. '.')
+      end
+    end
+  )
+end
+
+---@param client vim.lsp.Client
+local function sign_out(_, client)
+  client:request(
+    ---@diagnostic disable-next-line: param-type-mismatch
+    'signOut',
+    vim.empty_dict(),
+    function(err, result)
+      if err then
+        vim.notify(err.message, vim.log.levels.ERROR)
+        return
+      end
+      if result.status == 'NotSignedIn' then
+        vim.notify('Not signed in.')
+      end
+    end
+  )
+end
+
 return {
   {
     -- LSP Configuration & Plugins
@@ -11,31 +72,9 @@ return {
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
       { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
 
-      -- Additional lua configuration, makes nvim stuff amazing!
-      'folke/neodev.nvim',
     },
     config = function()
-      -- [[ Configure LSPs ]]
-      -- Enable telescope fzf native, if installed
-      pcall(require('telescope').load_extension, 'fzf')
-
-      -- See `:help telescope.builtin`
-      vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-      vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-      vim.keymap.set('n', '<leader>/', function()
-        -- You can pass additional configuration to telescope to change theme, layout, etc.
-        require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-          winblend = 10,
-          previewer = false,
-        })
-      end, { desc = '[/] Fuzzily search in current buffer' })
-
-      vim.keymap.set('n', '<leader>gf', require('telescope.builtin').git_files, { desc = 'Search [G]it [F]iles' })
-      vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
-      vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
-      vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
-      vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
-      vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
+      -- Picker keymaps moved to lua/plugins/snacks_keymaps.lua (snacks.nvim)
 
       -- [[ Configure LSP ]]
       --  This function gets run when an LSP connects to a particular buffer.
@@ -54,11 +93,9 @@ return {
         nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
         nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
-        nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+        -- gr, <leader>ds, <leader>ws picker keymaps in lua/plugins/snacks_keymaps.lua
         nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
         nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
-        nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-        nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
 
         -- See `:help K` for why this keymap
         nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
@@ -79,9 +116,6 @@ return {
         --   vim.lsp.buf.format()
         -- end, { desc = 'Format current buffer with LSP' })
       end
-
-      -- Setup neovim lua configuration
-      require('neodev').setup()
 
       -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
       local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -149,6 +183,51 @@ return {
             },
           },
         },
+      })
+
+      vim.lsp.config('copilot', {
+        cmd = {
+          'copilot-language-server',
+          '--stdio',
+        },
+        root_markers = { '.git' },
+        init_options = {
+          editorInfo = {
+            name = 'Neovim',
+            version = tostring(vim.version()),
+          },
+          editorPluginInfo = {
+            name = 'Neovim',
+            version = tostring(vim.version()),
+          },
+        },
+        settings = {
+          telemetry = {
+            telemetryLevel = 'all',
+          },
+        },
+        on_attach = function(client, bufnr)
+          vim.api.nvim_buf_create_user_command(bufnr, 'LspCopilotSignIn', function()
+            sign_in(bufnr, client)
+          end, { desc = 'Sign in Copilot with GitHub' })
+          vim.api.nvim_buf_create_user_command(bufnr, 'LspCopilotSignOut', function()
+            sign_out(bufnr, client)
+          end, { desc = 'Sign out Copilot with GitHub' })
+        end,
+        init = function()
+          local copilot_bin = vim.fn.exepath('copilot-language-server')
+          if copilot_bin == '' then
+            vim.notify(
+              'Copilot language server not found. Please install it from https://github.com/github/copilot.vim'
+            )
+            return
+          end
+        end,
+      })
+
+      vim.lsp.config('jdtls', {
+        capabilities = capabilities,
+        on_attach = on_attach,
       })
 
       require("mason").setup()

@@ -1,7 +1,9 @@
 -- Pull in the wezterm API
+local io = require 'io'
+local os = require 'os'
 local wezterm = require 'wezterm'
 local tabline = wezterm.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
-local sessions = wezterm.plugin.require("https://github.com/abidibo/wezterm-sessions")
+local resurrect = wezterm.plugin.require("https://github.com/MLFlexer/resurrect.wezterm")
 
 -- This table will hold the configuration.
 local config = {}
@@ -11,6 +13,11 @@ local config = {}
 local mux = wezterm.mux
 -- Manages key bindings to actions
 local act = wezterm.action
+
+-- Color themes
+local theme = 'Kanagawa (Gogh)'
+local ssh_theme = 'Gruvbox Dark (Gogh)'
+local prd_ssh_theme = 'IC_Orange_PPL'
 
 -- When wezterm starts, maximize window
 wezterm.on('gui-startup', function()
@@ -24,9 +31,68 @@ if wezterm.config_builder then
   config = wezterm.config_builder()
 end
 
-local theme = 'Kanagawa (Gogh)'
-local ssh_theme = 'Gruvbox Dark (Gogh)'
-local prd_ssh_theme = 'IC_Orange_PPL'
+-- SSH configs
+wezterm.on('update-status',
+  function(window, pane)
+    local fg_process_info = pane:get_foreground_process_info()
+
+    local overrides = window:get_config_overrides() or {}
+    local fg_process_name = fg_process_info.executable
+    local fg_process_args = fg_process_info.argv
+    local fg_process_args_length = #fg_process_args
+    local server = ''
+    -- Change as needed
+    local prd_indicator = 'pr'
+
+    for i = 1, fg_process_args_length do
+      if string.find(fg_process_args[i], '@') then
+        server = string.sub(fg_process_args[i], string.find(fg_process_args[i], '@') + 1)
+        break
+      end
+    end
+
+    if fg_process_name == '/usr/bin/ssh' or fg_process_name == '/usr/bin/scp' then
+      if string.find(server, prd_indicator) then
+        overrides.color_scheme = prd_ssh_theme
+      else
+        overrides.color_scheme = ssh_theme
+      end
+    else
+      overrides.color_scheme = theme
+    end
+
+    window:set_config_overrides(overrides)
+  end
+)
+
+-- Scrollback config
+wezterm.on('trigger-vim-with-scrollback',
+  function(window, pane)
+    -- Retrieve the text from the pane
+    local text = pane:get_lines_as_text(pane:get_dimensions().scrollback_rows)
+
+    -- Create a temporary file to pass to vim
+    local name = os.tmpname()
+    local f = io.open(name, 'w+') or error("Could not open file: " .. name)
+    f:write(text)
+    f:flush()
+    f:close()
+
+    -- Open a new window running vim and tell it to open the file
+    window:perform_action(
+      pane:send_text('nvim ' .. name .. '\n')
+    )
+
+    -- Wait "enough" time for vim to read the file before we remove it.
+    -- The window creation and process spawn are asynchronous wrt. running
+    -- this script and are not awaitable, so we just pick a number.
+
+    -- Note: We don't strictly need to remove this file, but it is nice
+    -- to avoid cluttering up the temporary directory.
+    wezterm.sleep_ms(1000)
+    os.remove(name)
+  end
+)
 
 tabline.setup({
   options = {
@@ -120,6 +186,11 @@ config.keys = {
     mods = 'LEADER',
     action = act.TogglePaneZoomState,
   },
+  {
+    key = ']',
+    mods = 'LEADER',
+    action = act.EmitEvent 'trigger-vim-with-scrollback',
+  },
   -- Spawn a new tab in the current domain
   {
     key = 'c',
@@ -173,6 +244,11 @@ config.keys = {
     key = 'w',
     mods = 'SUPER',
     action = act.CloseCurrentTab{ confirm = true },
+  },
+  {
+    key = 'W',
+    mods = 'SUPER|SHIFT',
+    action = act.CloseCurrentPane{ confirm = true },
   },
   -- LEADER + (h,j,k,l) to move between panes
   {
@@ -271,7 +347,6 @@ config.keys = {
     mods = 'LEADER',
     action = act.AttachDomain 'unix',
   },
-
   -- Detach from muxer
   {
     key = 'd',
@@ -306,27 +381,41 @@ config.keys = {
   {
     key = 'S',
     mods = 'LEADER|SHIFT',
-    action = act({ EmitEvent = "save_session" }),
+    action = wezterm.action_callback(function(_, _)
+        resurrect.state_manager.save_state(resurrect.workspace_state.get_workspace_state())
+        resurrect.window_state.save_window_action()
+      end),
   },
   {
-    key = 'O',
+    key = 'T',
     mods = 'LEADER|SHIFT',
-    action = act({ EmitEvent = "load_session" }),
+    action = resurrect.tab_state.save_tab_action(),
   },
   {
     key = 'R',
     mods = 'LEADER|SHIFT',
-    action = act({ EmitEvent = "restore_session" }),
-  },
-  {
-    key = 'D',
-    mods = 'LEADER|SHIFT',
-    action = act({ EmitEvent = "delete_session" }),
-  },
-  {
-    key = 'E',
-    mods = 'LEADER|SHIFT',
-    action = act({ EmitEvent = "edit_session" }),
+    action = wezterm.action_callback(function(win, pane)
+      resurrect.fuzzy_loader.fuzzy_load(win, pane, function(id, _)
+        local type = string.match(id, "^([^/]+)") -- match before '/'
+        id = string.match(id, "([^/]+)$") -- match after '/'
+        id = string.match(id, "(.+)%..+$") -- remove file extention
+        local opts = {
+          relative = true,
+          restore_text = true,
+          on_pane_restore = resurrect.tab_state.default_on_pane_restore,
+        }
+        if type == "workspace" then
+          local state = resurrect.state_manager.load_state(id, "workspace")
+          resurrect.workspace_state.restore_workspace(state, opts)
+        elseif type == "window" then
+          local state = resurrect.state_manager.load_state(id, "window")
+          resurrect.window_state.restore_window(pane:window(), state, opts)
+        elseif type == "tab" then
+          local state = resurrect.state_manager.load_state(id, "tab")
+          resurrect.tab_state.restore_tab(pane:tab(), state, opts)
+        end
+      end)
+    end),
   },
 }
 -- Mouse
@@ -406,39 +495,6 @@ config.use_dead_keys = false
 config.scrollback_lines = 10000
 config.window_close_confirmation = 'AlwaysPrompt'
 config.pane_focus_follows_mouse = true
-
--- SSH configs
-wezterm.on('update-status',
-  function(window, pane)
-    local fg_process_info = pane:get_foreground_process_info()
-
-    local overrides = window:get_config_overrides() or {}
-    local fg_process_name = fg_process_info.executable
-    local fg_process_args = fg_process_info.argv
-    local fg_process_args_length = #fg_process_args
-    local server = ''
-    -- Change as needed
-    local prd_indicator = 'pr'
-
-    for i = 1, fg_process_args_length do
-      if string.find(fg_process_args[i], '@') then
-        server = string.sub(fg_process_args[i], string.find(fg_process_args[i], '@') + 1)
-        break
-      end
-    end
-
-    if fg_process_name == '/usr/bin/ssh' or fg_process_name == '/usr/bin/scp' then
-      if string.find(server, prd_indicator) then
-        overrides.color_scheme = prd_ssh_theme
-      else
-        overrides.color_scheme = ssh_theme
-      end
-    else
-      overrides.color_scheme = theme
-    end
-
-    window:set_config_overrides(overrides)
-  end
-)
+config.audible_bell = 'Disabled'
 
 return config

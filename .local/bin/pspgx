@@ -1,0 +1,2 @@
+#!/bin/bash
+pspg --reprint-on-exit --line-numbers --no-topbar

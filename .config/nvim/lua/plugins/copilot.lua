@@ -1,72 +1,62 @@
 return {
-  -- AI plugins
   {
-    'zbirenbaum/copilot.lua',
-    cmd = 'Copilot',
-    event = 'InsertEnter',
-    config = function()
-      require('copilot').setup {
-        -- panel = {
-        --   enabled = true,
-        --   auto_refresh = true,
-        --   keymap = {
-        --     jump_prev = '[[',
-        --     jump_next = ']]',
-        --     accept = '<CR>',
-        --     refresh = 'gr',
-        --     open = '<M-CR>',
-        --   },
-        --   layout = {
-        --     position = 'bottom', -- | top | left | right
-        --     ratio = 0.4,
-        --   },
-        -- },
-        suggestion = {
-          enabled = true,
-          auto_trigger = true,
-          debounce = 75,
-          keymap = {
-            accept = '<C-l>',
-            accept_word = false,
-            accept_line = false,
-            next = '<C-,>',
-            prev = '<C-.>',
-            dismiss = '<C-/>',
-          },
-        },
-        -- suggestion = { enabled = false },
-        panel = { enabled = false },
-        filetypes = {
-          markdown = false,
-          help = false,
-          gitcommit = false,
-          gitrebase = false,
-          hgcommit = false,
-          svn = false,
-          cvs = false,
-          ['.'] = false,
-        },
-        copilot_node_command = 'node', -- Node.js version must be > 18.x
-        server_opts_overrides = {},
-      }
-    end,
-  },
-  -- {
-  --   'zbirenbaum/copilot-cmp',
-  --   config = function()
-  --     require('copilot_cmp').setup()
-  --   end,
-  -- },
-  {
-    'CopilotC-Nvim/CopilotChat.nvim',
-    dependencies = {
-      { "nvim-lua/plenary.nvim", branch = "master" }, -- for curl, log and async functions
-    },
+    "folke/sidekick.nvim",
+    lazy = false,
     opts = {
-      debug = true, -- Enable debugging
-      -- See Configuration section for rest
-      model = 'gemini-3-pro-preview'
+      -- add any options here
+      cli = {
+        mux = {
+          backend = "zellij",
+          enabled = false,
+        },
+      },
     },
-    -- See Commands section for default commands if you want to lazy load on them
+    nes = {
+      enabled = true,
+    },
+    keys = {
+      {
+        "<tab>",
+        function()
+          -- if there is a next edit, jump to it, otherwise apply it if any
+          if require("sidekick").nes_jump_or_apply() then
+            return -- jumped or applied
+          end
+
+          -- fall back to normal tab
+          return "<tab>"
+        end,
+        mode = { "i", "n" },
+        expr = true,
+        desc = "Goto/Apply Next Edit Suggestion",
+      },
+      {
+        "<leader>aa",
+        function() require("sidekick.cli").toggle() end,
+        desc = "Sidekick Toggle CLI",
+      },
+      {
+        "<leader>as",
+        function() require("sidekick.cli").select() end,
+        -- Or to select only installed tools:
+        -- require("sidekick.cli").select({ filter = { installed = true } })
+        desc = "Select CLI",
+      },
+      {
+        "<leader>ad",
+        function() require("sidekick.cli").close() end,
+        desc = "Detach a CLI Session",
+      },
+      {
+        "<leader>ac",
+        function() require("sidekick.cli").toggle({ name = "cursor", focus = true }) end,
+        desc = "Sidekick Toggle Cursor",
+      },
+      {
+        "<leader>ap",
+        function() require("sidekick.cli").toggle({ name = "copilot", focus = true }) end,
+        desc = "Sidekick Toggle Copilot",
+      },
+    },
   },
 }
