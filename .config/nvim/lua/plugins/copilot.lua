@@ -13,6 +13,14 @@ return {
     },
     nes = {
       enabled = true,
+      debounce = 1000,
+    },
+    cli = {
+      tools = {
+        antigravity = {
+          cmd = { "agy" },
+        },
+      }
     },
     keys = {
       {

@@ -63,6 +63,9 @@ vim.o.smartcase = true
 -- Keep signcolumn on by default
 vim.wo.signcolumn = 'auto:1'
 
+-- Custom statuscolumn with mini.diff signs and hybrid line numbers
+vim.o.statuscolumn = "%s%{v:relnum == 0 ? v:lnum : v:relnum}"
+
 -- Decrease update time
 vim.o.updatetime = 250
 vim.o.timeoutlen = 300
@@ -79,26 +82,38 @@ vim.o.list = true
 vim.o.relativenumber = true
 vim.o.numberwidth = 1
 
+-- Manage folds
 vim.o.foldenable = false
 vim.opt.foldlevelstart = 99
 
--- [[ Basic Keymaps ]]
+-- Overwrite filetypes
+vim.filetype.add({
+  extension = {
+    tf = "terraform",
+    tfvars = "terraform",
+  },
+})
 
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
--- vim.keymap.set({'n', 'v'}, '/', "/\\v", { noremap = true, silent = true })
+vim.keymap.set({'n', 'v'}, '/', "/\\v", { noremap = true, silent = true })
 
 -- Remap for dealing with word wrap
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+
+-- Diagnostic keymaps
+vim.keymap.set('n', '[d', function() vim.diagnostic.jump({ count = 1, float = true}) end, { desc = 'Go to previous diagnostic message' })
+vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = -1, float = true}) end, { desc = 'Go to next diagnostic message' })
+vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function()
-    vim.highlight.on_yank()
+    vim.hl.on_yank()
   end,
   group = highlight_group,
   pattern = '*',
@@ -128,14 +143,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end
 })
 
--- Diagnostic keymaps
-vim.keymap.set('n', '[d', function() vim.diagnostic.jump({ count = 1, float = true}) end, { desc = 'Go to previous diagnostic message' })
-vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = -1, float = true}) end, { desc = 'Go to next diagnostic message' })
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
-
--- Custom statuscolumn with mini.diff signs and hybrid line numbers
-vim.o.statuscolumn = "%s%{v:relnum == 0 ? v:lnum : v:relnum}"
-
 -- Example for configuring Neovim to load user-installed installed Lua rocks:
-package.path = package.path .. ';' .. vim.fn.expand '$HOME' .. '/.luarocks/share/lua/5.1/?/init.lua;'
-package.path = package.path .. ';' .. vim.fn.expand '$HOME' .. '/.luarocks/share/lua/5.1/?.lua;'
+-- package.path = package.path .. ';' .. vim.fn.expand '$HOME' .. '/.luarocks/share/lua/5.1/?/init.lua;'
+-- package.path = package.path .. ';' .. vim.fn.expand '$HOME' .. '/.luarocks/share/lua/5.1/?.lua;'
