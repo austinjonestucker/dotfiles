@@ -174,6 +174,11 @@ config.keys = {
     mods = 'SUPER',
     action = act.SendKey { key = 'u', mods = 'CTRL' },
   },
+-- Forward delete (fn+delete on Mac keyboards)
+  {
+    key = 'Delete',
+    action = act.SendString '\x1b[3~',
+  },
   -- Enter copy mode
   {
     key = '[',
@@ -496,5 +501,6 @@ config.scrollback_lines = 10000
 config.window_close_confirmation = 'AlwaysPrompt'
 config.pane_focus_follows_mouse = true
 config.audible_bell = 'Disabled'
+config.enable_kitty_keyboard = true
 
 return config

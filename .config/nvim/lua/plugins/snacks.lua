@@ -6,7 +6,20 @@ return {
     ---@type snacks.Config
     opts = {
       bigfile = { enabled = true, size = 50 * 1024 * 1024 --[[ 50MB ]] },
-      dashboard = { enabled = true },
+      dashboard = {
+        enabled = true,
+        width = 60,
+        sections = {
+          { text = { { "███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗", hl = "SnacksDashboardRainbow1" } }, align = "center" },
+          { text = { { "████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║", hl = "SnacksDashboardRainbow2" } }, align = "center" },
+          { text = { { "██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║", hl = "SnacksDashboardRainbow3" } }, align = "center" },
+          { text = { { "██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║", hl = "SnacksDashboardRainbow4" } }, align = "center" },
+          { text = { { "██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║", hl = "SnacksDashboardRainbow5" } }, align = "center" },
+          { text = { { "╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝", hl = "SnacksDashboardRainbow6" } }, align = "center" },
+          { section = "keys", gap = 1, padding = 1 },
+          { section = "startup" },
+        },
+      },
       explorer = { enabled = true },
       indent = { enabled = true },
       input = { enabled = true },
@@ -139,6 +152,18 @@ return {
       }
     },
     init = function()
+      local function set_dashboard_rainbow_hl()
+        local rainbow = { "#ff2b5b", "#ff8a00", "#e9ff00", "#00ff6a", "#00d4ff", "#8f3dff" }
+        for i, color in ipairs(rainbow) do
+          vim.api.nvim_set_hl(0, ("SnacksDashboardRainbow%d"):format(i), { fg = color, bold = true })
+        end
+      end
+
+      set_dashboard_rainbow_hl()
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        callback = set_dashboard_rainbow_hl,
+      })
+
       vim.api.nvim_create_autocmd("User", {
         pattern = "VeryLazy",
         callback = function()
@@ -176,5 +201,3 @@ return {
     end,
   }
 }
-
-

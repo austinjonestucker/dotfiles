@@ -59,10 +59,11 @@ return {
                         )
                     then
                         vim.treesitter.start()
-                        -- if vim.treesitter.query.get(lang, "indents") then
-                        --     vim.bo.indentexpr =
-                        --         "v:lua.require'nvim-treesitter'.indentexpr()"
-                        -- end
+                        if lang == "python" or lang == "sql" then
+                            vim.bo.indentexpr = ""
+                        elseif vim.treesitter.query.get(lang, "indents") then
+                            vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+                        end
                         if vim.treesitter.query.get(lang, "folds") then
                             vim.wo[0][0].foldexpr =
                                 "v:lua.vim.treesitter.foldexpr()"

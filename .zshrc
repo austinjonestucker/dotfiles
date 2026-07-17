@@ -153,6 +153,9 @@ function usql() {
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+# Set local user
+export USER="Austin.Tucker"
+
 # Mac OS only config
 export HOMEBREW_HOME="/opt/homebrew"
 # export HOMEBREW_HOME="/usr/local"
