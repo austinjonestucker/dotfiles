@@ -1,0 +1,20 @@
+#!/bin/zsh
+
+connection=$1
+
+declare -A onepassword_map
+
+# Add mappings for each connection to the corresponding 1Password item, as needed. The key is the connection name from the usql YAML file, and the value is the 1Password item ID.
+# Production connections
+onepassword_map["CONNECTION_NAME"]=ONEPASSWORD_ITEM_ID
+
+
+
+username=$(op item get $onepassword_map["$connection"] --reveal --fields username)
+password=$(op item get $onepassword_map["$connection"] --reveal --fields password)
+hostname=$(op item get $onepassword_map["$connection"] --reveal --fields server)
+port=$(op item get $onepassword_map["$connection"] --reveal --fields port)
+encoded_password=$(printf %s "$password" | jq -sRr @uri)
+database=$(echo $connection | cut -d'-' -f1)
+
+$HOMEBREW_HOME/bin/pgcli postgres://$username:$encoded_password@$hostname:$port/$database

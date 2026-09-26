@@ -2,12 +2,11 @@
 DISABLE_AUTO_TITLE="true"
 precmd () {print -Pn "\e]0;%~\a"}
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+# Powerlevel10k instant prompt is intentionally disabled (see POWERLEVEL9K_INSTANT_PROMPT=off
+# in ~/.p10k.zsh). Do not source ~/.cache/p10k-instant-prompt-*.zsh here: that cache is what
+# resurfaces the "Input is not a terminal" / print-mode errors when kitty session restore
+# runs commands at shell startup. Re-enable the standard instant-prompt block only if you
+# turn instant prompt back on in ~/.p10k.zsh.
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
@@ -117,7 +116,7 @@ alias tmux="TERM=screen-256color-bce tmux -2 -u"
 # SSH with passwords, if passwords in 1Password
 alias sshwp='~/ssh_login.sh'
 alias der="dotenv run"
-alias vim="nvim"
+alias glogx="glog | lessx"
 
 # Add zmv
 autoload zmv
@@ -125,29 +124,150 @@ autoload zmv
 # Add thefuck
 # eval $(thefuck --alias)
 
-# SSH configs
-# Used if SSH prompts for password (requires custom file for pwd fetch)
-function ssh() {
-  # change based on usage
-  CHECK_USER="atucker"
-  USER=$(echo "$1" | cut -d'@' -f1)
-  if [[ ($USER = $CHECK_USER) ]]; then
-      export SSH_ASKPASS_REQUIRE=force
-      export SSH_ASKPASS="$HOME/ssh_get_pw.sh"
-    if [[ ($TERM = "xterm-kitty") ]]; then
-      kitty +kitten ssh "$@"
-    elif [[ ($TERM = "xterm-256color") ]]; then
-      command $0 "$@"
-    fi
-  else
-    unset SSH_ASKPASS_REQUIRE
-    command $0 "$@"
-  fi
+# SSH / DB helpers
+# Plain ssh (no kitten ssh). In kitty: set colors by hostname, force a
+# ubiquitous TERM, then restore the default theme on exit.
+#
+# Kitty session restore eval's cmd_at_shell_startup inside _ksi_deferred_init
+# (first precmd). op/1Password cannot reliably prompt then—especially with
+# several panes starting at once. Detect that path and sched the real command
+# ~1s later once the shell is interactive.
+_kitty_config_dir="${KITTY_CONFIG_DIRECTORY:-$HOME/.config/kitty}"
+_kitty_theme_dir="${_kitty_config_dir}/themes"
+typeset -g _AT_KITTY_DEFERRED_CMD=""
+typeset -g _AT_SHELL_START=$SECONDS
+zmodload zsh/sched 2>/dev/null
+
+_at_kitty_session_startup() {
+  (( ${funcstack[(Ie)_ksi_deferred_init]} )) && return 0
+  [[ $zsh_eval_context == *eval* ]] && (( SECONDS - _AT_SHELL_START < 3 ))
 }
 
-# usql config
+_at_kitty_defer_cmd() {
+  _AT_KITTY_DEFERRED_CMD="$1"
+  print -r -- "kitty session: deferring for prompt/1Password UI: $1" >&2
+  sched +1 _at_kitty_run_deferred_from_sched
+}
+
+_at_kitty_run_deferred_from_sched() {
+  [[ -n "$_AT_KITTY_DEFERRED_CMD" ]] || return 0
+  local cmd="$_AT_KITTY_DEFERRED_CMD"
+  _AT_KITTY_DEFERRED_CMD=""
+  print -r -- "kitty session: starting: $cmd" >&2
+  # Use the pane's normal stdio (kitty PTY). Do not redirect to /dev/tty —
+  # that breaks prompt_toolkit apps like pgcli (OSError Errno 22 on add_reader).
+  eval "$cmd"
+}
+
+_kitty_ssh_target_host() {
+  local arg
+  for arg in "$@"; do
+    if [[ "$arg" == *@* && "$arg" != -* ]]; then
+      echo "${arg#*@}"
+      return 0
+    fi
+  done
+  local -i i
+  for ((i = $#; i >= 1; i--)); do
+    arg="${argv[i]}"
+    if [[ "$arg" != -* ]]; then
+      echo "$arg"
+      return 0
+    fi
+  done
+}
+
+_kitty_set_ssh_colors() {
+  [[ "$TERM" == "xterm-kitty" ]] || return 0
+  local host="$1"
+  local theme="${_kitty_theme_dir}/GruvboxDark.conf"
+  local match="recent:0"
+  [[ -n "$KITTY_WINDOW_ID" ]] && match="id:${KITTY_WINDOW_ID}"
+  if [[ "$host" == *pr* ]]; then
+    theme="${_kitty_theme_dir}/IC_Orange_PPL.conf"
+  fi
+  kitten @ set-colors --match="$match" "$theme" 2>/dev/null || true
+}
+
+_kitty_restore_colors() {
+  [[ "$TERM" == "xterm-kitty" ]] || return 0
+  local match="recent:0"
+  [[ -n "$KITTY_WINDOW_ID" ]] && match="id:${KITTY_WINDOW_ID}"
+  kitten @ set-colors --match="$match" "${_kitty_config_dir}/current-theme.conf" 2>/dev/null || true
+}
+
+function ssh() {
+  if _at_kitty_session_startup; then
+    _at_kitty_defer_cmd "ssh ${(j: :)${(q)@}}"
+    return 0
+  fi
+
+  local CHECK_USER="atucker"
+  local USER host rc
+  USER=$(echo "$1" | cut -d'@' -f1)
+  host="$(_kitty_ssh_target_host "$@")"
+
+  if [[ "$USER" = "$CHECK_USER" ]]; then
+    export SSH_ASKPASS_REQUIRE=force
+    export SSH_ASKPASS="$HOME/ssh_get_pw.sh"
+  else
+    unset SSH_ASKPASS_REQUIRE
+    unset SSH_ASKPASS
+  fi
+
+  if [[ "$TERM" == "xterm-kitty" ]]; then
+    _kitty_set_ssh_colors "$host"
+    TERM=xterm-256color command ssh "$@"
+    rc=$?
+    _kitty_restore_colors
+    return $rc
+  fi
+  command ssh "$@"
+}
+
+function scp() {
+  if _at_kitty_session_startup; then
+    _at_kitty_defer_cmd "scp ${(j: :)${(q)@}}"
+    return 0
+  fi
+
+  local CHECK_USER="atucker"
+  local USER host rc
+  USER=$(echo "${2:-$1}" | cut -d'@' -f1)
+  host="$(_kitty_ssh_target_host "$@")"
+
+  if [[ "$USER" = "$CHECK_USER" ]]; then
+    export SSH_ASKPASS_REQUIRE=force
+    export SSH_ASKPASS="$HOME/ssh_get_pw.sh"
+  else
+    unset SSH_ASKPASS_REQUIRE
+    unset SSH_ASKPASS
+  fi
+
+  if [[ "$TERM" == "xterm-kitty" ]]; then
+    _kitty_set_ssh_colors "$host"
+    TERM=xterm-256color command scp "$@"
+    rc=$?
+    _kitty_restore_colors
+    return $rc
+  fi
+  command scp "$@"
+}
+
 function usql() {
+  if _at_kitty_session_startup; then
+    _at_kitty_defer_cmd "usql ${(j: :)${(q)@}}"
+    return 0
+  fi
   command ~/.local/bin/usql "$@"
+}
+
+function pg() {
+  if _at_kitty_session_startup; then
+    _at_kitty_defer_cmd "command pg ${(j: :)${(q)@}}"
+    return 0
+  fi
+  command pg "$@"
 }
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -195,6 +315,9 @@ export CPPFLAGS="$CPPFLAGS -I$HOMEBREW_HOME/opt/krb5/include"
 
 # OpenGL config
 # export LDFLAGS="-L/opt/X11/lib"
+
+# Curl config
+export PATH="$HOMEBREW_HOME/opt/curl/bin:$PATH"
 
 # GPG config
 export GPG_TTY=$(tty)
@@ -294,6 +417,9 @@ alias dbtf=$HOME/.local/bin/dbt
 
 # Starship prompt (only one prompt should be enabled)
 # eval "$(starship init zsh)"
+#
+# Transient prompt for Starship (zsh) was tried here via zle-line-init; removed
+# when switching back to p10k after session-restore SSH TTY regressions.
 
 # Colima / Docker config
 #  It should point to Colima's socket:

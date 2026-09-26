@@ -1,0 +1,25 @@
+#!/bin/zsh
+
+connection=$1
+
+declare -A onepassword_map
+
+# Add mappings for each connection to the corresponding 1Password item, as needed. The key is the connection name from the usql YAML file, and the value is the 1Password item ID.
+onepassword_map["CONNECTION_NAME"]=ONEPASSWORD_ITEM_ID
+
+protocol=$(yq ".connections.$connection.protocol" $XDG_CONFIG_HOME/usql/config.yaml)
+username=$(op item get $onepassword_map["$connection"] --reveal --fields username)
+password=$(op item get $onepassword_map["$connection"] --reveal --fields password)
+encoded_password=$(printf %s "$password" | jq -sRr @uri)
+hostname=$(yq ".connections.$connection.hostname" $XDG_CONFIG_HOME/usql/config.yaml)
+port=$(yq ".connections.$connection.port" $XDG_CONFIG_HOME/usql/config.yaml)
+database=$(yq ".connections.$connection.database" $XDG_CONFIG_HOME/usql/config.yaml)
+
+uri=$protocol://$username:$encoded_password@$hostname:$port/$database
+
+ if [[ "$2" == "--print-uri" ]]; then
+   print -r -- "$uri"
+   exit 0
+ fi
+
+ exec "$HOMEBREW_HOME/bin/usql" "$uri"
